@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Knowledge Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;500;600&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light theme */
+            --l-primary-color: #ff4b4b;
+            --l-background-color: #fcf9f7;
+            --l-card-bg: #ffffff;
+            --l-text-color: #2c2c2c;
+            --l-secondary-text: #666666;
+            --l-border-color: #eeeeee;
+            --l-hover-bg: #f7f7f7;
+            --l-stats-bg: #fafafa;
+            --l-accent-color: #ff6b6b;
+
+            /* Dark theme */
+            --d-primary-color: #ff6b6b;
+            --d-background-color: #1a1a1a;
+            --d-card-bg: #242424;
+            --d-text-color: #f0f0f0;
+            --d-secondary-text: #b0b0b0;
+            --d-border-color: #333333;
+            --d-hover-bg: #2a2a2a;
+            --d-stats-bg: #2d2d2d;
+            --d-accent-color: #ff8787;
+
+            /* Common */
+            --border-radius: 8px;
+            --card-padding: 24px;
+            --transition-speed: 0.2s;
+            --tag-colors: #FF9A8B, #FFB7B2, #FFDAB9, #FFE4B5, #FFE5D9;
+            --tag-1: #FF6B6B;
+            --tag-2: #4ECDC4;
+            --tag-3: #FFD93D;
+            --tag-4: #95E1D3;
+            --tag-5: #FF8C42;
+        }
+
+        [data-theme="light"] {
+            --primary-color: var(--l-primary-color);
+            --background-color: var(--l-background-color);
+            --card-bg: var(--l-card-bg);
+            --text-color: var(--l-text-color);
+            --secondary-text: var(--l-secondary-text);
+            --border-color: var(--l-border-color);
+            --hover-bg: var(--l-hover-bg);
+            --stats-bg: var(--l-stats-bg);
+            --accent-color: var(--l-accent-color);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: var(--d-primary-color);
+            --background-color: var(--d-background-color);
+            --card-bg: var(--d-card-bg);
+            --text-color: var(--d-text-color);
+            --secondary-text: var(--d-secondary-text);
+            --border-color: var(--d-border-color);
+            --hover-bg: var(--d-hover-bg);
+            --stats-bg: var(--d-stats-bg);
+            --accent-color: var(--d-accent-color);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 16px;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: var(--background-color);
+            padding: 16px 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all var(--transition-speed);
+        }
+
+        .theme-switch:hover {
+            border-color: var(--accent-color);
+            background: var(--hover-bg);
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 24px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all var(--transition-speed);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px var(--accent-color-25);
+        }
+
+        .search-button {
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .search-button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .cards-container {
+            display: grid;
+            gap: 24px;
+            padding: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all var(--transition-speed);
+            position: relative;
+        }
+
+        .card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-preview {
+            width: 100%;
+            height: 160px;
+            background-color: var(--stats-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-preview.tagged {
+            position: relative;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .result-preview.tagged::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: var(--border-radius);
+            opacity: 0.15;
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .tag-glow-1 .result-preview::after { background: var(--tag-1); }
+        .tag-glow-2 .result-preview::after { background: var(--tag-2); }
+        .tag-glow-3 .result-preview::after { background: var(--tag-3); }
+        .tag-glow-4 .result-preview::after { background: var(--tag-4); }
+        .tag-glow-5 .result-preview::after { background: var(--tag-5); }
+
+        .tag-glow-1.tag-glow-2 .result-preview::after { background: linear-gradient(45deg, var(--tag-1), var(--tag-2)); }
+        .tag-glow-1.tag-glow-3 .result-preview::after { background: linear-gradient(45deg, var(--tag-1), var(--tag-3)); }
+        .tag-glow-1.tag-glow-4 .result-preview::after { background: linear-gradient(45deg, var(--tag-1), var(--tag-4)); }
+        .tag-glow-1.tag-glow-5 .result-preview::after { background: linear-gradient(45deg, var(--tag-1), var(--tag-5)); }
+        .tag-glow-2.tag-glow-3 .result-preview::after { background: linear-gradient(45deg, var(--tag-2), var(--tag-3)); }
+        .tag-glow-2.tag-glow-4 .result-preview::after { background: linear-gradient(45deg, var(--tag-2), var(--tag-4)); }
+        .tag-glow-2.tag-glow-5 .result-preview::after { background: linear-gradient(45deg, var(--tag-2), var(--tag-5)); }
+        .tag-glow-3.tag-glow-4 .result-preview::after { background: linear-gradient(45deg, var(--tag-3), var(--tag-4)); }
+        .tag-glow-3.tag-glow-5 .result-preview::after { background: linear-gradient(45deg, var(--tag-3), var(--tag-5)); }
+        .tag-glow-4.tag-glow-5 .result-preview::after { background: linear-gradient(45deg, var(--tag-4), var(--tag-5)); }
+
+        .result-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .result-preview.fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, var(--stats-bg), var(--card-bg));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-preview.fallback::before {
+            content: "=";
+            font-family: 'Inter', sans-serif;
+            font-size: 64px;
+            font-weight: 300;
+            color: var(--primary-color);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .result-preview.fallback.pulse::before {
+            animation: pulsate 1.5s ease-out;
+        }
+
+        @keyframes pulsate {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .result-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background-color: var(--stats-bg);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            border: 1px solid transparent;
+        }
+
+        .result-score:hover {
+            border-color: var(--primary-color);
+            background-color: var(--hover-bg);
+        }
+
+        .result-tag {
+            position: absolute;
+            top: 16px;
+            left: 64px;
+            background: var(--card-bg);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            color: var(--secondary-text);
+            border: 1px solid var(--border-color);
+            z-index: 10;
+            font-family: 'Roboto Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .clickable-content {
+            cursor: pointer;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            transition: background-color var(--transition-speed);
+        }
+
+        .clickable-content:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .result-title {
+            font-family: 'Merriweather', serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-color);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: none;
+            -webkit-box-orient: vertical;
+            overflow: visible;
+            max-height: none;
+        }
+
+        .result-meta {
+            font-size: 14px;
+            color: var(--secondary-text);
+        }
+
+        .result-url {
+            color: var(--secondary-text);
+            font-size: 12px;
+            margin-top: 8px;
+            display: block;
+            opacity: 0.8;
+            text-decoration: none;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .result-url:hover {
+            color: var(--primary-color);
+        }
+
+        .prompt-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .prompt-modal.active {
+            display: flex;
+        }
+
+        .prompt-content {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .prompt-close {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 24px;
+            padding: 4px;
+        }
+
+        .prompt-close:hover {
+            color: var(--primary-color);
+        }
+
+        .prompt-text {
+            font-family: 'Merriweather', serif;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            color: var(--text-color);
+        }
+
+        .prompt-meta {
+            font-size: 14px;
+            color: var(--secondary-text);
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .playlist-controls {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+        }
+
+        .playlist-count {
+            font-size: 14px;
+            color: var(--secondary-text);
+        }
+
+        .export-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .export-button:hover {
+            background: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .card-action-button {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            color: var(--text-color);
+            font-size: 24px;
+            z-index: 10;
+        }
+
+        .card-action-button:hover {
+            background: var(--hover-bg);
+            transform: scale(1.1);
+        }
+
+        .card-action-button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .tag-chips {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 15;
+        }
+
+        .tag-chip {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .tag-chip:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        .tag-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tag-modal.active {
+            display: flex;
+        }
+
+        .tag-modal-content {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            width: 300px;
+            position: relative;
+        }
+
+        .tag-modal-content h3 {
+            margin: 0 0 16px 0;
+            color: var(--text-color);
+        }
+
+        .tag-input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background: var(--background-color);
+            color: var(--text-color);
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .tag-modal .card-action-button {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+
+        .tag-menu {
+            position: absolute;
+            top: 60px;
+            right: 16px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 8px;
+            z-index: 100;
+            min-width: 200px;
+            display: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .tag-menu.active {
+            display: block;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .tag-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+            color: var(--text-color);
+        }
+
+        .tag-menu-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .tag-menu-item .tag-color {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 300;
+        }
+
+        .tag-menu-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 0;
+        }
+
+        .new-tag-button {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            color: var(--primary-color);
+            transition: all var(--transition-speed);
+        }
+
+        .new-tag-button:hover {
+            background: var(--hover-bg);
+        }
+
+        @media (max-width: 640px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-button {
+                width: 100%;
+            }
+
+            .playlist-controls {
+                bottom: 16px;
+                left: 16px;
+                right: 16px;
+                transform: none;
+                border-radius: 16px;
+                padding: 12px 16px;
+            }
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all var(--transition-speed);
+        }
+
+        .fab:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .equals-button {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            color: var(--text-color);
+            font-size: 24px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-switch" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark Mode</span>
+    </div>
+
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search academic papers..." />
+            <button id="searchButton" class="search-button">Search</button>
+        </div>
+
+        <div id="cardsContainer" class="cards-container">
+        </div>
+    </div>
+
+    <button class="fab" onclick="scrollToTop()" title="Scroll to top">↑</button>
+
+    <div id="promptModal" class="prompt-modal">
+        <div class="prompt-content">
+            <div class="prompt-header">
+                <h3>Match Details</h3>
+                <button class="prompt-close" onclick="closePromptModal()">×</button>
+            </div>
+            <div id="promptText" class="prompt-text"></div>
+            <div id="promptMeta" class="prompt-meta"></div>
+        </div>
+    </div>
+
+    <div class="playlist-controls">
+        <span class="playlist-count">0 items in playlist</span>
+        <button class="export-button" onclick="exportPlaylist()">Export</button>
+    </div>
+
+    <div id="tagModal" class="tag-modal">
+        <div class="tag-modal-content">
+            <h3>Set Tag Name</h3>
+            <input type="text" id="tagInput" class="tag-input" placeholder="Enter tag name...">
+            <button class="export-button" onclick="saveTagName()">Save</button>
+            <button class="card-action-button" onclick="closeTagModal()">×</button>
+        </div>
+    </div>
+
+    <script>
+        let currentData = [];
+        let preloadedImages = new Map();
+
+        // Theme handling
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            themeIcon.textContent = isDark ? '☀️' : '🌙';
+            themeText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        }
+
+        function generateId(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '')
+                .substring(0, 12);
+        }
+
+        async function tryPreloadImage(url) {
+            try {
+                // Try direct image URL
+                const response = await fetch(url);
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.startsWith('image/')) {
+                    return url;
+                }
+
+                // Try parsing HTML for meta tags
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+
+                // Array of possible image sources to try
+                const imageSources = [
+                    // OpenGraph images
+                    doc.querySelector('meta[property="og:image"]')?.content,
+                    doc.querySelector('meta[property="og:image:secure_url"]')?.content,
+                    
+                    // Twitter images
+                    doc.querySelector('meta[name="twitter:image"]')?.content,
+                    doc.querySelector('meta[name="twitter:image:src"]')?.content,
+                    
+                    // Schema.org image
+                    doc.querySelector('meta[itemprop="image"]')?.content,
+                    
+                    // Apple touch icon
+                    doc.querySelector('link[rel="apple-touch-icon"]')?.href,
+                    
+                    // MS Tile image
+                    doc.querySelector('meta[name="msapplication-TileImage"]')?.content,
+                    
+                    // Article image
+                    doc.querySelector('meta[property="article:image"]')?.content,
+                    
+                    // Look for high-res images in content
+                    ...Array.from(doc.querySelectorAll('img[src*="hero"], img[src*="cover"], img[src*="featured"], img[src*="thumbnail"]'))
+                        .map(img => img.src),
+                    
+                    // Any image over 200px
+                    ...Array.from(doc.querySelectorAll('img'))
+                        .filter(img => img.width > 200 || img.height > 200)
+                        .map(img => img.src),
+                    
+                    // Favicons in different sizes
+                    doc.querySelector('link[rel="icon"][sizes="192x192"]')?.href,
+                    doc.querySelector('link[rel="icon"][sizes="128x128"]')?.href,
+                    doc.querySelector('link[rel="icon"]')?.href,
+                    doc.querySelector('link[rel="shortcut icon"]')?.href,
+                    
+                    // Fallback to first image
+                    doc.querySelector('img')?.src
+                ];
+
+                // Try each source until we find a valid image
+                for (const src of imageSources) {
+                    if (!src) continue;
+                    
+                    try {
+                        const imgResponse = await fetch(src);
+                        if (imgResponse.ok && imgResponse.headers.get('content-type')?.startsWith('image/')) {
+                            return src;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+
+                // Try to extract domain and use favicon from favicon service
+                const domain = new URL(url).hostname;
+                return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+
+            } catch (error) {
+                console.error('Error preloading image:', error);
+                return null;
+            }
+        }
+
+        async function preloadImages() {
+            const promises = currentData.flatMap(item => 
+                (item.results || []).map(async result => {
+                    if (!result.url || preloadedImages.has(result.url)) return;
+                    
+                    const imageUrl = await tryPreloadImage(result.url);
+                    if (imageUrl) {
+                        preloadedImages.set(result.url, imageUrl);
+                    }
+                })
+            );
+
+            await Promise.allSettled(promises);
+            renderCards();
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+
+            currentData.forEach((item, index) => {
+                if (!item.results) return;
+
+                const results = item.results.map((result, rIndex) => {
+                    const previewImage = preloadedImages.get(result.url);
+                    const resultId = `${generateId(item.requestId || 'card')}-${rIndex}`;
+                    const displayId = generateDisplayId(result);
+                    const urlDisplay = new URL(result.url).hostname;
+                    
+                    let imageHtml;
+                    if (previewImage) {
+                        imageHtml = `
+                            <div class="result-preview">
+                                <img src="${previewImage}" 
+                                     alt="${escapeHtml(getDisplayTitle(result))}" 
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='https://www.google.com/s2/favicons?domain=${new URL(result.url).hostname}&sz=128';">
+                            </div>`;
+                    } else {
+                        imageHtml = `
+                            <div class="result-preview fallback">
+                                <div class="fallback-pattern"></div>
+                            </div>`;
+                    }
+
+                    return `
+                        <div class="card ${playlist.has(resultId) ? 'in-playlist' : ''}" id="card-${resultId}">
+                            <div class="tag-chips"></div>
+                            <div class="result-tag">${escapeHtml(displayId)}</div>
+                            <button class="card-action-button" onclick="toggleCardMenu('${resultId}', this)" title="Add to playlist">+</button>
+                            ${imageHtml}
+                            <div class="result-content">
+                                <div class="result-score" 
+                                     onclick="showPromptModal('${escapeHtml(item.autopromptString || '')}', ${result.score}, '${escapeHtml(item.searchStyle || '')}')">
+                                    <span>${(result.score * 100).toFixed(0)}% Match</span>
+                                    <span style="font-size: 12px">ℹ️</span>
+                                </div>
+                                <div class="clickable-content" onclick="window.open('${result.url}', '_blank')">
+                                    <div class="result-title">
+                                        ${escapeHtml(getDisplayTitle(result))}
+                                    </div>
+                                    <div class="result-meta">
+                                        <div>By ${escapeHtml(getDisplayAuthor(result))}</div>
+                                        ${result.publishedDate ? 
+                                            `<div>Published ${new Date(result.publishedDate).toLocaleDateString()}</div>` : ''}
+                                    </div>
+                                    <a href="${result.url}" class="result-url" target="_blank" rel="noopener">
+                                        ${escapeHtml(urlDisplay)}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML += results;
+            });
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showPromptModal(prompt, score, searchStyle) {
+            const modal = document.getElementById('promptModal');
+            const promptText = document.getElementById('promptText');
+            const promptMeta = document.getElementById('promptMeta');
+            
+            promptText.textContent = prompt || 'No prompt available';
+            promptMeta.innerHTML = `
+                <div>Match Score: ${(score * 100).toFixed(0)}%</div>
+                ${searchStyle ? `<div>Search Style: ${searchStyle}</div>` : ''}
+            `;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePromptModal() {
+            const modal = document.getElementById('promptModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('promptModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('prompt-modal')) {
+                closePromptModal();
+            }
+        });
+
+        // Load and render data
+        fetch('eeggaadd.json')
+            .then(response => response.json())
+            .then(data => {
+                currentData = data;
+                preloadImages();
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+                document.getElementById('cardsContainer').innerHTML = 
+                    '<div class="error">Error loading data. Please try again later.</div>';
+            });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+
+        function performSearch() {
+            const query = searchInput.value.toLowerCase();
+            const filteredData = currentData.map(item => ({
+                ...item,
+                results: (item.results || []).filter(result => 
+                    result.title?.toLowerCase().includes(query) ||
+                    result.author?.toLowerCase().includes(query) ||
+                    result.url?.toLowerCase().includes(query)
+                )
+            })).filter(item => item.results.length > 0);
+
+            currentData = filteredData;
+            renderCards();
+        }
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        searchButton.addEventListener('click', performSearch);
+
+        // Playlist management
+        let playlist = new Set();
+
+        function updatePlaylistCount() {
+            const count = playlist.size;
+            document.querySelector('.playlist-count').textContent = 
+                `${count} item${count !== 1 ? 's' : ''} in playlist`;
+        }
+
+        function addToPlaylist(resultId, cardElement) {
+            playlist.add(resultId);
+            cardElement.classList.add('in-playlist');
+            updatePlaylistCount();
+        }
+
+        function removeFromPlaylist(resultId, cardElement) {
+            playlist.delete(resultId);
+            cardElement.classList.remove('in-playlist');
+            updatePlaylistCount();
+        }
+
+        function generateCitation(result) {
+            return {
+                title: result.title || 'Untitled',
+                author: result.author || 'Unknown',
+                url: result.url,
+                publishedDate: result.publishedDate,
+                score: result.score
+            };
+        }
+
+        function exportPlaylist() {
+            const citations = Array.from(playlist).map(resultId => {
+                const [cardId, resultIndex] = resultId.split('-');
+                const card = currentData.find(item => generateId(item.requestId || 'card') === cardId);
+                if (card && card.results[resultIndex]) {
+                    const result = card.results[resultIndex];
+                    const tagId = cardTags.get(resultId);
+                    return {
+                        title: result.title || 'Untitled',
+                        author: result.author || 'Unknown',
+                        url: result.url,
+                        publishedDate: result.publishedDate,
+                        score: result.score,
+                        tag: tagId ? {
+                            id: tagId,
+                            name: tags.get(tagId),
+                            colorIndex: (parseInt(tagId) % 5) + 1
+                        } : null
+                    };
+                }
+                return null;
+            }).filter(Boolean);
+
+            // Group by tags
+            const groupedCitations = {
+                untagged: [],
+                tagged: {}
+            };
+
+            citations.forEach(citation => {
+                if (citation.tag) {
+                    const tagName = citation.tag.name;
+                    if (!groupedCitations.tagged[tagName]) {
+                        groupedCitations.tagged[tagName] = [];
+                    }
+                    groupedCitations.tagged[tagName].push(citation);
+                } else {
+                    groupedCitations.untagged.push(citation);
+                }
+            });
+
+            const blob = new Blob([JSON.stringify(groupedCitations, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'academic-playlist.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Tag management
+        let tags = new Map(); // Store all created tags
+        let cardTags = new Map(); // Store tags per set
+
+        function toggleCardMenu(cardId, button) {
+            const isActive = button.classList.contains('active');
+            
+            if (isActive) {
+                button.textContent = '+';
+                button.classList.remove('active');
+                const menu = document.querySelector('.tag-menu.active');
+                if (menu) menu.remove();
+            } else {
+                button.textContent = '=';
+                button.classList.add('active');
+                showTagMenu(cardId, button);
+            }
+        }
+
+        function toggleTag(tagId, cardId) {
+            const card = document.getElementById(`card-${cardId}`);
+            const preview = card.querySelector('.result-preview');
+            const currentTags = cardTags.get(cardId) || new Set();
+            
+            if (currentTags.has(tagId)) {
+                currentTags.delete(tagId);
+            } else {
+                currentTags.add(tagId);
+            }
+            
+            if (currentTags.size > 0) {
+                cardTags.set(cardId, currentTags);
+                // Add to playlist automatically
+                addToPlaylist(cardId, card);
+            } else {
+                cardTags.delete(cardId);
+            }
+            
+            // Update visual state
+            card.classList.remove('tag-glow-1', 'tag-glow-2', 'tag-glow-3', 'tag-glow-4', 'tag-glow-5');
+            if (currentTags.size > 0) {
+                preview.classList.add('tagged');
+                currentTags.forEach(id => {
+                    const colorIndex = (parseInt(id) % 5) + 1;
+                    card.classList.add(`tag-glow-${colorIndex}`);
+                });
+                
+                // Trigger pulse animation
+                preview.classList.add('pulse');
+                setTimeout(() => {
+                    preview.classList.remove('pulse');
+                }, 1500);
+            } else {
+                preview.classList.remove('tagged');
+            }
+
+            renderCardTags(cardId);
+
+            // Close the menu
+            const button = card.querySelector('.card-action-button');
+            toggleCardMenu(cardId, button);
+        }
+
+        function renderCardTags(cardId) {
+            const card = document.getElementById(`card-${cardId}`);
+            const tagContainer = card.querySelector('.tag-chips');
+            const currentTags = cardTags.get(cardId) || new Set();
+            
+            if (!tagContainer) return;
+            
+            if (currentTags.size > 0) {
+                tagContainer.innerHTML = Array.from(currentTags).map(tagId => {
+                    const tagName = tags.get(tagId);
+                    const colorIndex = (parseInt(tagId) % 5) + 1;
+                    return `
+                        <div class="tag-chip" 
+                             style="background: var(--tag-${colorIndex})"
+                             onclick="toggleTag('${tagId}', '${cardId}')">
+                            ${escapeHtml(tagName)}
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                tagContainer.innerHTML = '';
+            }
+        }
+
+        function showTagModal(cardId) {
+            const modal = document.getElementById('tagModal');
+            const input = document.getElementById('tagInput');
+            input.value = '';
+            input.dataset.cardId = cardId;
+            modal.classList.add('active');
+            input.focus();
+
+            // Close any open tag menu
+            const existingMenu = document.querySelector('.tag-menu.active');
+            if (existingMenu) existingMenu.remove();
+        }
+
+        function closeTagModal() {
+            const modal = document.getElementById('tagModal');
+            modal.classList.remove('active');
+        }
+
+        function saveTagName() {
+            const input = document.getElementById('tagInput');
+            const cardId = input.dataset.cardId;
+            const tagId = Date.now().toString();
+            const tagName = input.value.trim();
+            
+            if (tagName) {
+                tags.set(tagId, tagName);
+                toggleTag(tagId, cardId);
+                closeTagModal();
+            }
+        }
+
+        // Handle Enter key in tag input
+        document.getElementById('tagInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                saveTagName();
+            }
+        });
+
+        function showTagMenu(cardId, button) {
+            const existingMenu = document.querySelector('.tag-menu.active');
+            if (existingMenu) existingMenu.remove();
+
+            const menu = document.createElement('div');
+            menu.className = 'tag-menu';
+            
+            let menuContent = '';
+            
+            // Add existing tags
+            tags.forEach((tagName, tagId) => {
+                const color = `var(--tag-${(parseInt(tagId) % 5) + 1})`;
+                const isActive = cardTags.get(cardId)?.has(tagId);
+                menuContent += `
+                    <div class="tag-menu-item" onclick="toggleTag('${tagId}', '${cardId}')" 
+                         style="${isActive ? 'background: var(--hover-bg)' : ''}">
+                        <div class="tag-color" style="background: ${color}">=</div>
+                        ${escapeHtml(tagName)}
+                    </div>
+                `;
+            });
+
+            // Add divider if there are existing tags
+            if (tags.size > 0) {
+                menuContent += '<div class="tag-menu-divider"></div>';
+            }
+
+            // Add "New Tag" button
+            menuContent += `
+                <div class="new-tag-button" onclick="showTagModal('${cardId}')">
+                    + Create New Tag
+                </div>
+            `;
+
+            menu.innerHTML = menuContent;
+            document.body.appendChild(menu);
+
+            // Position menu below button
+            const rect = button.getBoundingClientRect();
+            menu.style.top = `${rect.bottom + window.scrollY + 8}px`;
+            menu.style.right = `${window.innerWidth - rect.right}px`;
+
+            // Show menu with animation
+            requestAnimationFrame(() => menu.classList.add('active'));
+
+            // Close menu when clicking outside
+            function closeMenu(e) {
+                if (!menu.contains(e.target) && e.target !== button) {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                }
+            }
+            
+            setTimeout(() => {
+                document.addEventListener('click', closeMenu);
+            }, 0);
+        }
+
+        function generateDisplayId(result) {
+            if (result.author) {
+                const author = result.author.split(' ')[0];
+                const title = result.title ? result.title.substring(0, 8) : '';
+                return `${author}-${title}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            } else {
+                // If no author, use first 14 characters of title
+                const titleText = result.title || 'unknown';
+                return titleText.substring(0, 14).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            }
+        }
+
+        function getDisplayTitle(result) {
+            if (!result.title && !result.author) return 'Unknown Source';
+            if (!result.title) return `Work by ${result.author}`;
+            return result.title;
+        }
+
+        function getDisplayAuthor(result) {
+            if (!result.author && !result.title) return 'Unknown Author';
+            if (!result.author) return result.title.substring(0, 20) + '...';
+            return result.author;
+        }
+    </script>
+</body>
+</html>
